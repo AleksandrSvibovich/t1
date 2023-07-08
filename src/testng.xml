@@ -2,11 +2,6 @@
 
 <suite name = "test">
     <test name="test groups">
-        <groups>
-            <run>
-                <include name="regression" />
-            </run>
-        </groups>
         <classes>
             <class
                     name="TestClass" />
