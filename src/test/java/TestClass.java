@@ -15,21 +15,18 @@ public class TestClass {
     JSONObject json;
 
 
-    @BeforeSuite
+    @BeforeSuite(groups = {"negative", "positive"})
     public void parseJSON() {
         Object object;
         try {
             object = new JSONParser().parse(new FileReader("src/test/result.json"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
         json = (JSONObject) object;
     }
 
-    @Test()
-    @Parameters("positive")
+    @Test(groups = {"positive"})
     public void checkDetectivesArraySizeAndMainIDs() {
         boolean sizeCheck = false;
         Long mainID = null;
@@ -46,11 +43,10 @@ public class TestClass {
                 "MainId available values in range from 0 to 10. Detectives available values in range from 1 to 3. ArraySize " + detectiveArraySize);
     }
 
-    @Test()
-    @Parameters("positive")
+    @Test(groups = {"positive"})
     public void checkDetectivesCategoryIDValues() {
         JSONArray detectives = (JSONArray) json.get("detectives");
-        Long catID = null;
+        Long catID = 0L;
         for (Object detective : detectives) {
             JSONObject currentDetective = (JSONObject) detective;
             JSONArray categories = (JSONArray) currentDetective.get("categories");
@@ -63,8 +59,7 @@ public class TestClass {
         Assert.assertTrue(catID >= 1 && catID <= 2, "Category ID is not correct, current value is - " + catID);
     }
 
-    @Test()
-    @Parameters("positive")
+    @Test(groups = {"positive"})
     public void checkNullValueOfParameterExtraForCategoryTwo() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         Object extra = null;
@@ -84,8 +79,7 @@ public class TestClass {
         Assert.assertNull(extra, "Extra is not null " + extra);
     }
 
-    @Test()
-    @Parameters("positive")
+    @Test(groups = {"positive"})
     public void checkSizeOfExtraArrayForCategoryOne() {
         int extraArrSize = 0;
         JSONArray detectives = (JSONArray) json.get("detectives");
@@ -107,8 +101,7 @@ public class TestClass {
         Assert.assertTrue(extraArrSize >= 1, " extraArray for CategoryID = 1 should have size more than 1");
     }
 
-    @Test()
-    @Parameters("positive")
+    @Test(groups = {"positive"})
     public void checkSuccessValue() {
         boolean jsonContainsSherlock = false;
         JSONArray detectives = (JSONArray) json.get("detectives");
@@ -127,16 +120,14 @@ public class TestClass {
 
     //____________________________________
 
-    @Test()
-    @Parameters("negative")
+    @Test(groups = {"negative"})
     public void checkIncorrectDetectivesArraySize() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         int detectiveArraySize = detectives.size();
         Assert.assertFalse(detectiveArraySize < 1 || detectiveArraySize > 3, "Detectives array size - " + detectives.size());
     }
 
-    @Test()
-    @Parameters("negative")
+    @Test(groups = {"negative"})
     public void checkIncorrectDetectivesMainIDValues() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         for (Object detective : detectives) {
@@ -149,8 +140,7 @@ public class TestClass {
     }
 
 
-    @Test()
-    @Parameters("negative")
+    @Test(groups = {"negative"})
     public void checkIncorrectDetectivesCategoryIDValues() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         for (Object detective : detectives) {
@@ -164,8 +154,7 @@ public class TestClass {
         }
     }
 
-    @Test()
-    @Parameters("negative")
+    @Test(groups = {"negative"})
     public void checkNullValueOfParameterExtraExcludeCategoryTwo() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         for (Object detective : detectives) {
@@ -184,8 +173,7 @@ public class TestClass {
         }
     }
 
-    @Test()
-    @Parameters("negative")
+    @Test(groups = {"negative"})
     public void checkIncorrectSizeOfExtraArrayForCategoryOne() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         for (Object detective : detectives) {
@@ -204,8 +192,7 @@ public class TestClass {
         }
     }
 
-    @Test()
-    @Parameters("negative")
+    @Test(groups = {"negative"})
     public void checkUnSuccessValue() {
         boolean jsonContainsSherlock = false;
         JSONArray detectives = (JSONArray) json.get("detectives");

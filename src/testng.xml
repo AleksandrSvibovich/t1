@@ -1,10 +1,16 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 
-<suite name = "test">
+<suite name="test">
     <test name="test groups">
+        <groups>
+            <run>
+                <include name = "negative"/>
+                <include name = "positive"/>
+            </run>
+        </groups>
         <classes>
             <class
-                    name="TestClass" />
+                    name="TestClass"/>
         </classes>
     </test>
 </suite>
