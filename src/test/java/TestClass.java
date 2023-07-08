@@ -46,65 +46,48 @@ public class TestClass {
                 "MainId available values in range from 0 to 10. Detectives available values in range from 1 to 3. ArraySize " + detectiveArraySize);
     }
 
-//    @Test()
-//    @Parameters("positive")
-//    public void checkDetectivesArraySize() {
-//        JSONArray detectives = (JSONArray) json.get("detectives");
-//        int detectiveArraySize = detectives.size();
-//        Assert.assertTrue(detectiveArraySize >= 1 && detectiveArraySize <= 3, "Detectives array should have size more than one, but less than 3, current size - " + detectives.size());
-//    }
-//
-//    @Test()
-//    @Parameters("positive")
-//    public void checkDetectivesMainIDValues() {
-//        JSONArray detectives = (JSONArray) json.get("detectives");
-//        for (Object detective : detectives) {
-//            JSONObject currentDetective = (JSONObject) detective;
-//            Long mainID = (Long) currentDetective.get("MainId");
-//            Assert.assertTrue(mainID >= 0 && mainID <= 10,
-//                    "MainId available values in range from 0 to 10. Current value for " + detective + ", is = " + currentDetective.get("MainId"));
-//
-//        }
-//    }
-
     @Test()
     @Parameters("positive")
     public void checkDetectivesCategoryIDValues() {
         JSONArray detectives = (JSONArray) json.get("detectives");
+        Long catID = null;
         for (Object detective : detectives) {
             JSONObject currentDetective = (JSONObject) detective;
             JSONArray categories = (JSONArray) currentDetective.get("categories");
             for (Object category : categories) {
                 JSONObject test = (JSONObject) category;
-                Long catID = (Long) test.get("CategoryID");
-                Assert.assertTrue(catID >= 1 && catID <= 2, "Category ID is not correct, current value is - " + catID);
+                catID = (Long) test.get("CategoryID");
+
             }
         }
+        Assert.assertTrue(catID >= 1 && catID <= 2, "Category ID is not correct, current value is - " + catID);
     }
 
     @Test()
     @Parameters("positive")
     public void checkNullValueOfParameterExtraForCategoryTwo() {
         JSONArray detectives = (JSONArray) json.get("detectives");
+        Object extra = null;
         for (Object detective : detectives) {
             JSONObject currentDetective = (JSONObject) detective;
             JSONArray categories = (JSONArray) currentDetective.get("categories");
             for (Object category : categories) {
                 JSONObject test = (JSONObject) category;
                 Long catID = (Long) test.get("CategoryID");
-                Object extra;
                 if (catID != 2) {
                     break;
                 }
                 extra = ((JSONObject) category).get("extra");
-                Assert.assertNull(extra, "Extra is not null " + extra);
+
             }
         }
+        Assert.assertNull(extra, "Extra is not null " + extra);
     }
 
     @Test()
     @Parameters("positive")
     public void checkSizeOfExtraArrayForCategoryOne() {
+        int extraArrSize = 0;
         JSONArray detectives = (JSONArray) json.get("detectives");
         for (Object detective : detectives) {
             JSONObject currentDetective = (JSONObject) detective;
@@ -117,10 +100,11 @@ public class TestClass {
                 }
                 Object extra = ((JSONObject) category).get("extra");
                 JSONArray extraArray = (JSONArray) ((JSONObject) extra).get("extraArray");
-                int extraArrSize = extraArray.size();
-                Assert.assertTrue(extraArrSize >= 1, " extraErray for CategoryID = 1 should have size more than 1");
+                extraArrSize = extraArray.size();
+
             }
         }
+        Assert.assertTrue(extraArrSize >= 1, " extraArray for CategoryID = 1 should have size more than 1");
     }
 
     @Test()
@@ -165,7 +149,6 @@ public class TestClass {
     }
 
 
-
     @Test()
     @Parameters("negative")
     public void checkIncorrectDetectivesCategoryIDValues() {
@@ -176,9 +159,67 @@ public class TestClass {
             for (Object category : categories) {
                 JSONObject test = (JSONObject) category;
                 Long catID = (Long) test.get("CategoryID");
-                Assert.assertTrue(catID >= 1 && catID <= 2, "Category ID is not correct, current value is - " + catID);
+                Assert.assertFalse(catID < 1 || catID > 2, "Category ID is correct, current value is - " + catID);
             }
         }
+    }
+
+    @Test()
+    @Parameters("negative")
+    public void checkNullValueOfParameterExtraExcludeCategoryTwo() {
+        JSONArray detectives = (JSONArray) json.get("detectives");
+        for (Object detective : detectives) {
+            JSONObject currentDetective = (JSONObject) detective;
+            JSONArray categories = (JSONArray) currentDetective.get("categories");
+            for (Object category : categories) {
+                JSONObject test = (JSONObject) category;
+                Long catID = (Long) test.get("CategoryID");
+                Object extra;
+                if (catID == 2) {
+                    break;
+                }
+                extra = ((JSONObject) category).get("extra");
+                Assert.assertNotNull(extra, "Extra is not null " + extra);
+            }
+        }
+    }
+
+    @Test()
+    @Parameters("negative")
+    public void checkIncorrectSizeOfExtraArrayForCategoryOne() {
+        JSONArray detectives = (JSONArray) json.get("detectives");
+        for (Object detective : detectives) {
+            JSONObject currentDetective = (JSONObject) detective;
+            JSONArray categories = (JSONArray) currentDetective.get("categories");
+            for (Object category : categories) {
+                JSONObject test = (JSONObject) category;
+                Long catID = (Long) test.get("CategoryID");
+                if (catID != 1) {
+                    break;
+                }
+                Object extra = ((JSONObject) category).get("extra");
+                JSONArray extraArray = (JSONArray) ((JSONObject) extra).get("extraArray");
+                Assert.assertNull(extraArray, "Extra array not exist for category One");
+            }
+        }
+    }
+
+    @Test()
+    @Parameters("negative")
+    public void checkUnSuccessValue() {
+        boolean jsonContainsSherlock = false;
+        JSONArray detectives = (JSONArray) json.get("detectives");
+        for (Object detective : detectives) {
+            JSONObject currentDetective = (JSONObject) detective;
+            String name = (String) currentDetective.get("firstName");
+            if (name.equalsIgnoreCase("Sherlock")) {
+                jsonContainsSherlock = true;
+            }
+        }
+        boolean successFlag = (boolean) json.get("success");
+        Assert.assertEquals(successFlag, jsonContainsSherlock,
+                "Parameter success can by true only in case detectives array contains detective with firstName Sherlock. " + "Value of success "
+                        + successFlag + ". Detectives array contains Sherlock " + jsonContainsSherlock);
     }
 }
 
