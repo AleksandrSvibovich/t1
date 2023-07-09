@@ -201,10 +201,8 @@ public class TestClass {
             }
         }
         boolean successFlag = (boolean) json.get("success");
-        boolean bothParamFalse = successFlag && jsonContainsSherlock;
-        Assert.assertFalse(!bothParamFalse,
-                "Detective with firstName Sherlock. " + jsonContainsSherlock
-                        + " value of success - " + successFlag);
+        boolean bothParamFalse = !successFlag || !jsonContainsSherlock;
+        Assert.assertFalse(bothParamFalse);
     }
 }
 
