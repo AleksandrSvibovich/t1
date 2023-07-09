@@ -118,8 +118,6 @@ public class TestClass {
                         + successFlag + ". Detectives array contains Sherlock " + jsonContainsSherlock);
     }
 
-    //____________________________________
-
     @Test(groups = {"negative"})
     public void checkIncorrectDetectivesArraySize() {
         JSONArray detectives = (JSONArray) json.get("detectives");
@@ -182,12 +180,11 @@ public class TestClass {
             for (Object category : categories) {
                 JSONObject test = (JSONObject) category;
                 Long catID = (Long) test.get("CategoryID");
-                if (catID != 1) {
+                if (catID == 1) {
                     break;
                 }
                 Object extra = ((JSONObject) category).get("extra");
-                JSONArray extraArray = (JSONArray) ((JSONObject) extra).get("extraArray");
-                Assert.assertNull(extraArray, "Extra array not exist for category One");
+                Assert.assertNull(extra, "Extra array not exist for category One");
             }
         }
     }
@@ -204,9 +201,10 @@ public class TestClass {
             }
         }
         boolean successFlag = (boolean) json.get("success");
-        Assert.assertEquals(successFlag, jsonContainsSherlock,
-                "Parameter success can by true only in case detectives array contains detective with firstName Sherlock. " + "Value of success "
-                        + successFlag + ". Detectives array contains Sherlock " + jsonContainsSherlock);
+        boolean bothParamFalse = successFlag && jsonContainsSherlock;
+        Assert.assertFalse(!bothParamFalse,
+                "Detective with firstName Sherlock. " + jsonContainsSherlock
+                        + " value of success - " + successFlag);
     }
 }
 
