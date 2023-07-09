@@ -36,10 +36,11 @@ public class TestClass {
             for (Object detective : detectives) {
                 JSONObject currentDetective = (JSONObject) detective;
                 mainID = (Long) currentDetective.get("MainId");
+                Assert.assertTrue(sizeCheck && mainID >= 0 && mainID <= 10,
+                        "MainId available values in range from 0 to 10. Detectives available values in range from 1 to 3. ArraySize " + detectiveArraySize);
+
             }
         }
-        Assert.assertTrue(sizeCheck && mainID >= 0 && mainID <= 10,
-                "MainId available values in range from 0 to 10. Detectives available values in range from 1 to 3. ArraySize " + detectiveArraySize);
     }
 
     @Test(groups = {"positive"})
@@ -55,7 +56,7 @@ public class TestClass {
 
             }
         }
-        Assert.assertTrue(catID >= 1 && catID <= 2, "Category ID is not correct, current value is - " + catID);
+        Assert.assertTrue(catID == 1 || catID == 2, "Category ID is not correct, current value is - " + catID);
     }
 
     @Test(groups = {"positive"})
@@ -74,28 +75,7 @@ public class TestClass {
                 }
             }
         }
-//        Assert.assertNull(extra, "Extra is not null " + extra);
     }
-
-//    @Test(groups = {"positive"})
-//    public void checkNotNullValueOfParameterExtraForCategoryTwo() {
-//        JSONArray detectives = (JSONArray) json.get("detectives");
-//        Object extra = null;
-//        for (Object detective : detectives) {
-//            JSONObject currentDetective = (JSONObject) detective;
-//            JSONArray categories = (JSONArray) currentDetective.get("categories");
-//            for (Object category : categories) {
-//                JSONObject test = (JSONObject) category;
-//                Long catID = (Long) test.get("CategoryID");
-//                if (catID != 2) {
-//                    break;
-//                }
-//                extra = ((JSONObject) category).get("extra");
-//
-//            }
-//        }
-//        Assert.assertNotNull(extra, "Extra is not null " + extra);
-//    }
 
     @Test(groups = {"positive"})
     public void checkSizeOfExtraArrayForCategoryOne() {
@@ -136,14 +116,21 @@ public class TestClass {
                         + successFlag + ". Detectives array contains Sherlock " + jsonContainsSherlock);
     }
 
+
     @Test(groups = {"negative"})
     public void checkIncorrectDetectivesArraySize() {
         JSONArray detectives = (JSONArray) json.get("detectives");
-        int detectiveArraySize = detectives.size();
-        Assert.assertFalse(detectiveArraySize < 1 || detectiveArraySize > 3, "Detectives array size - " + detectives.size());
+        if (detectives != null) {
+            int detectiveArraySize = detectives.size();
+            Assert.assertFalse(detectiveArraySize < 1 || detectiveArraySize > 3, "Detectives array size - " + detectives.size());
+        } else {
+            throw new NullPointerException();
+        }
+
+
     }
 
-    @Test(groups = {"negative"})
+    @Test(groups = {"negative"}, dependsOnMethods = {"checkIncorrectDetectivesArraySize"})
     public void checkIncorrectDetectivesMainIDValues() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         for (Object detective : detectives) {
@@ -212,20 +199,32 @@ public class TestClass {
     @Test(groups = {"negative"})
     public void checkIncorrectSizeOfExtraArrayForCategoryOne() {
         JSONArray detectives = (JSONArray) json.get("detectives");
+        Object extra = null;
+        Object extraArray = null;
         for (Object detective : detectives) {
             JSONObject currentDetective = (JSONObject) detective;
             JSONArray categories = (JSONArray) currentDetective.get("categories");
             for (Object category : categories) {
-                JSONObject test = (JSONObject) category;
-                Long catID = (Long) test.get("CategoryID");
-                if (catID == 1) {
-                    break;
+                extra = ((JSONObject) category).get("extra");
+                if (extra != null) {
+                    extraArray = ((JSONObject) extra).get("extraArray");
+                    if (extraArray == null) {
+                        checkAssertWithCatagory((JSONObject) category);
+                    }
+                } else {
+                    checkAssertWithCatagory((JSONObject) category);
                 }
-                Object extra = ((JSONObject) category).get("extra");
-                Assert.assertNull(extra, "Extra array not exist for category One");
             }
         }
     }
+
+    private static void checkAssertWithCatagory(JSONObject category) {
+        Long catID = (Long) category.get("CategoryID");
+        Assert.assertFalse((long) catID == 1, "extraArray should have size " +
+                "more than one and should be inside Extra but Extra " +
+                "is NULL for Category with ID =1");
+    }
+
 
     @Test(groups = {"negative"})
     public void checkUnSuccessValue() {
