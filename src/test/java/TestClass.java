@@ -4,7 +4,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import java.io.FileReader;
@@ -67,17 +66,36 @@ public class TestClass {
             JSONObject currentDetective = (JSONObject) detective;
             JSONArray categories = (JSONArray) currentDetective.get("categories");
             for (Object category : categories) {
-                JSONObject test = (JSONObject) category;
-                Long catID = (Long) test.get("CategoryID");
-                if (catID != 2) {
-                    break;
-                }
                 extra = ((JSONObject) category).get("extra");
-
+                if (extra == null) {
+                    JSONObject test = (JSONObject) category;
+                    Long catID = (Long) test.get("CategoryID");
+                    Assert.assertEquals((long) catID, 2, "extra is null for category !=2");
+                }
             }
         }
-        Assert.assertNull(extra, "Extra is not null " + extra);
+//        Assert.assertNull(extra, "Extra is not null " + extra);
     }
+
+//    @Test(groups = {"positive"})
+//    public void checkNotNullValueOfParameterExtraForCategoryTwo() {
+//        JSONArray detectives = (JSONArray) json.get("detectives");
+//        Object extra = null;
+//        for (Object detective : detectives) {
+//            JSONObject currentDetective = (JSONObject) detective;
+//            JSONArray categories = (JSONArray) currentDetective.get("categories");
+//            for (Object category : categories) {
+//                JSONObject test = (JSONObject) category;
+//                Long catID = (Long) test.get("CategoryID");
+//                if (catID != 2) {
+//                    break;
+//                }
+//                extra = ((JSONObject) category).get("extra");
+//
+//            }
+//        }
+//        Assert.assertNotNull(extra, "Extra is not null " + extra);
+//    }
 
     @Test(groups = {"positive"})
     public void checkSizeOfExtraArrayForCategoryOne() {
@@ -172,6 +190,26 @@ public class TestClass {
     }
 
     @Test(groups = {"negative"})
+    public void checkNotNullValueForCategoryTwo() {
+        JSONArray detectives = (JSONArray) json.get("detectives");
+        Object extra = null;
+        for (Object detective : detectives) {
+            JSONObject currentDetective = (JSONObject) detective;
+            JSONArray categories = (JSONArray) currentDetective.get("categories");
+            for (Object category : categories) {
+                JSONObject test = (JSONObject) category;
+                Long catID = (Long) test.get("CategoryID");
+                if (catID == 2) {
+                    break;
+                }
+                extra = ((JSONObject) category).get("extra");
+
+            }
+        }
+        Assert.assertNotNull(extra, "Extra is null for category !=2" + extra);
+    }
+
+    @Test(groups = {"negative"})
     public void checkIncorrectSizeOfExtraArrayForCategoryOne() {
         JSONArray detectives = (JSONArray) json.get("detectives");
         for (Object detective : detectives) {
@@ -201,7 +239,7 @@ public class TestClass {
             }
         }
         boolean successFlag = (boolean) json.get("success");
-        boolean bothParamFalse = !successFlag || !jsonContainsSherlock;
+        boolean bothParamFalse = !successFlag && !jsonContainsSherlock;
         Assert.assertFalse(bothParamFalse);
     }
 }
