@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class TestClass {
 
-    JSONObject json;
+    private JSONObject json;
 
 
     @BeforeSuite(groups = {"negative", "positive"})
